@@ -1,9 +1,12 @@
 const fs = require('fs')
+const printer = require('printer')
 const pdf = require('html5-to-pdf')
 
-const savePDF = function (path, html) {
+console.log('default printer name: ' + (printer.getDefaultPrinterName() || 'is not defined on your computer'))
+
+const savePDF = function (path, html, cssPath) {
   return new Promise((resolve, reject) => {
-    pdf()
+    pdf({cssPath})
       .from(html)
       .to(path, function (error) {
         if (error) return reject(error)
@@ -21,7 +24,18 @@ const saveHTML = function (path, html) {
   })
 }
 
+const print = function (file) {
+  return new Promise((resolve, reject) => {
+    printer.printFile({
+      filename: file,
+      success: resolve,
+      error: reject
+    })
+  })
+}
+
 module.exports = {
   pdf: savePDF,
-  html: saveHTML
+  html: saveHTML,
+  print: print
 }
